@@ -12,6 +12,7 @@ log = logging.getLogger(__name__)
 SCHEMA_MAP = {
     'mark-as-shipped': 'mark_as_shipped_schema_file',
     'mark-as-started': 'mark_as_started_schema_file',
+    'submit-mar-manifest': 'submit_mar_manifest_schema_file',
 }
 
 

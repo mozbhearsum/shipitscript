@@ -60,10 +60,20 @@ def mark_as_started_action(context):
                                  release_name, data)
 
 
+def submit_mar_manifest_action(context):
+    log.info('Submitting mar manifest to Ship-it v2...')
+    ship_actions.submit_mar_manifest(
+        context.config['work_dir'], context.ship_it_instance_config,
+        context.task['payload']['release_name'],
+        context.task['payload']['checksum_artifacts'],
+    )
+
+
 # ACTION_MAP {{{1
 ACTION_MAP = {
     'mark-as-shipped': mark_as_shipped_action,
     'mark-as-started': mark_as_started_action,
+    'submit-mar-manifest': submit_mar_manifest_action,
 }
 
 

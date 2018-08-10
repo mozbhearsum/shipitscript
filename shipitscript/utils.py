@@ -47,6 +47,7 @@ def same_timing(time1, time2):
     return arrow.get(time1) == arrow.get(time2)
 
 
+# see if we'll hit task definition size limit when we're depending on all upstream partial + complete tasks (full locale)
 def build_mar_filelist(workdir, checksums_artifacts):
     filelist = []
     messages = []
@@ -74,3 +75,10 @@ def collect_mar_checksums(filelist):
             mar_checksums[name] = f.read().rstrip()
 
     return mar_checksums
+
+
+def generate_mar_manifest(mar_checksums):
+    # TODO: see if everybody likes this format :)
+    return {
+        "mars": mar_checksums
+    }

@@ -4,7 +4,8 @@ from datetime import datetime
 import shipitapi
 
 from shipitscript.utils import (
-    get_auth_primitives, check_release_has_values
+    get_auth_primitives, check_release_has_values,
+    build_mar_filelist, collect_mar_checksums, generate_mar_manifest,
 )
 
 
@@ -48,9 +49,11 @@ def mark_as_started(ship_it_instance_config, release_name, data):
 
 
 # TODO: This needs to talk to ship it v2
-def submit_file_signing_manifest(context, ship_it_instance_config, release_name):
-    filelist = build_mar_filelist(context.config['work_dir'], context.task['payload']['checksums_artifacts'])
+def submit_file_signing_manifest(workdir, ship_it_instance_config, release_name, checksum_artifacts):
+    filelist = build_mar_filelist(workdir, checksum_artifacts)
     mar_checksums = collect_mar_checksums(filelist)
+    mar_manifest = generate_mar_manifest(mar_checksums)
+    assert mar_manifest
     # set up ship it v2 auth
     # collect data from upstream task artifacts
     #  - we probably can't depend directly on all of the upstream tasks, because there will be too many...
