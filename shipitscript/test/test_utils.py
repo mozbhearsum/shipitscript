@@ -8,7 +8,7 @@ from scriptworker.exceptions import ScriptWorkerTaskException, \
     TaskVerificationError
 from shipitscript.utils import (
     get_auth_primitives, check_release_has_values, same_timing,
-    build_mar_filelist
+    build_mar_filelist, collect_mar_checksums
 )
 
 
@@ -285,6 +285,7 @@ def test_build_mar_filelist(tmpdir, present_files, checksums_artifacts, expected
         with open(abs_path, 'w') as f:
             # Make file exist
             print('something', file=f)
+
     try:
         file_list = build_mar_filelist(workdir, checksums_artifacts)
         expected_mars = []
@@ -301,3 +302,22 @@ def test_build_mar_filelist(tmpdir, present_files, checksums_artifacts, expected
         return
     if expected_exception:
         assert False, "expected exception ({}) not raised".format(expected_exception)
+
+
+@pytest.mark.parametrize('present_files', (
+    ("abc/foo.sha512", "def/foo.sha512"),
+))
+def test_collect_mar_checksums(tmpdir, present_files):
+    workdir = tmpdir
+    filelist = []
+    expected_checksums = {}
+    for i, pf in enumerate(present_files):
+        abs_path = os.path.join(workdir, 'cot', pf)
+        os.makedirs(os.path.dirname(abs_path))
+        with open(abs_path, 'w') as f:
+            # Make file exist
+            print('something{}'.format(i), file=f)
+        filelist.append((pf, abs_path))
+        expected_checksums[pf] = "something{}".format(i)
+
+    assert collect_mar_checksums(filelist) == expected_checksums

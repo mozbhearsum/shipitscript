@@ -71,6 +71,6 @@ def collect_mar_checksums(filelist):
     mar_checksums = {}
     for name, path in filelist:
         with open(path) as f:
-            mar_checksums[name] = f.read()
+            mar_checksums[name] = f.read().rstrip()
 
     return mar_checksums
