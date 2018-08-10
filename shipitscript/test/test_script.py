@@ -84,6 +84,55 @@ async def test_mark_as_started(context, monkeypatch, scopes, payload, raises):
         })
 
 
+@pytest.mark.parametrize('scopes,release_name,checksum_artifacts,raises', (
+    (
+        [
+            'project:releng:ship-it:action:submit-mar-manifest',
+            'project:releng:ship-it:server:dev'
+        ],
+        'Firefox-61.0b9-build1',
+        {"taskId": "abcdef"},
+        True,
+    ),
+    (
+        [
+            'project:releng:ship-it:action:submit-mar-manifest',
+            'project:releng:ship-it:server:dev'
+        ],
+        'Firefox-61.0b9-build1',
+        {"taskId": "abcdef", "path": "foo.sha512"},
+        False,
+    ),
+))
+@pytest.mark.asyncio
+async def test_submit_mar_manifest(context, monkeypatch, scopes, release_name, checksum_artifacts, raises):
+    context.task['scopes'] = scopes
+    context.task['payload'] = {
+        "release_name": release_name,
+        "checksum_artifacts": checksum_artifacts,
+    }
+
+    submit_mar_manifest_mock = MagicMock()
+    monkeypatch.setattr(ship_actions, 'submit_mar_manifest', submit_mar_manifest_mock)
+
+    if raises:
+        with pytest.raises(TaskVerificationError):
+            await script.async_main(context)
+    else:
+        await script.async_main(context)
+        submit_mar_manifest_mock.assert_called_with(
+            context.config['work_dir'],
+            {
+                'api_root': 'http://some-ship-it.url',
+                'timeout_in_seconds': 1,
+                'username': 'some-username',
+                'password': 'some-password'
+            },
+            release_name,
+            checksum_artifacts,
+        )
+
+
 @pytest.mark.parametrize('task,raises', (
     ({
         'dependencies': ['someTaskId'],

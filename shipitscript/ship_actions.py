@@ -49,7 +49,7 @@ def mark_as_started(ship_it_instance_config, release_name, data):
 
 
 # TODO: This needs to talk to ship it v2
-def submit_file_signing_manifest(workdir, ship_it_instance_config, release_name, checksum_artifacts):
+def submit_mar_manifest(workdir, ship_it_instance_config, release_name, checksum_artifacts):
     filelist = build_mar_filelist(workdir, checksum_artifacts)
     mar_checksums = collect_mar_checksums(filelist)
     mar_manifest = generate_mar_manifest(mar_checksums)

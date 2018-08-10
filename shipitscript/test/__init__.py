@@ -9,7 +9,8 @@ def context():
     context = Context()
     context.config = {
         'mark_as_shipped_schema_file': os.path.join(os.getcwd(), 'shipitscript', 'data', 'mark_as_shipped_task_schema.json'),
-        'mark_as_started_schema_file': os.path.join(os.getcwd(), 'shipitscript', 'data', 'mark_as_started_task_schema.json')
+        'mark_as_started_schema_file': os.path.join(os.getcwd(), 'shipitscript', 'data', 'mark_as_started_task_schema.json'),
+        'submit_mar_manifest_schema_file': os.path.join(os.getcwd(), 'shipitscript', 'data', 'submit_mar_manifest_task_schema.json'),
     }
     context.config['ship_it_instances'] = {
         'project:releng:ship-it:server:dev': {
@@ -20,6 +21,7 @@ def context():
         }
     }
     context.config['taskcluster_scope_prefix'] = "project:releng:ship-it:"
+    context.config['work_dir'] = '/tmp'
     context.task = {
         'dependencies': ['someTaskId'],
         'payload': {
