@@ -45,3 +45,18 @@ def mark_as_started(ship_it_instance_config, release_name, data):
     release_api.update(release_name, ready=True, complete=True, status="Started")
     check_release_has_values(release_api, release_name,
                              ready=True, complete=True, status="Started")
+
+
+# TODO: This needs to talk to ship it v2
+def submit_file_signing_manifest(context, ship_it_instance_config, release_name):
+    filelist = build_mar_filelist(context.config['work_dir'], context.task['payload']['checksums_artifacts'])
+    mar_checksums = collect_mar_checksums(filelist)
+    # set up ship it v2 auth
+    # collect data from upstream task artifacts
+    #  - we probably can't depend directly on all of the upstream tasks, because there will be too many...
+    #  - it looks like release-generate-checksums has mozharness pulling stuff from s3.
+    #     we should avoid this if we can, because it bypasses CoT. ideally we find some way to depend on
+    #     everything directly here....
+    #    or maybe there's intermediary "dummy" tasks that download checksums from their upstreams, and make larger checksums
+    #    out of those. then we could depend on those, and pull all of those checksums.
+    #    would that still be useful if those "dummy" tasks run on docker worker, though?

@@ -1,10 +1,21 @@
+import os
+import os.path
 import pytest
+import tempfile
 from unittest.mock import MagicMock
 
-from scriptworker.exceptions import ScriptWorkerTaskException
+from scriptworker.exceptions import ScriptWorkerTaskException, \
+    TaskVerificationError
 from shipitscript.utils import (
-    get_auth_primitives, check_release_has_values, same_timing
+    get_auth_primitives, check_release_has_values, same_timing,
+    build_mar_filelist
 )
+
+
+@pytest.yield_fixture(scope='function')
+def tmpdir():
+    with tempfile.TemporaryDirectory() as tmp:
+        yield tmp
 
 
 @pytest.mark.parametrize('ship_it_instance_config,expected', (
@@ -245,3 +256,48 @@ def test_generic_validation(monkeypatch, release_info,  values, raises):
 ))
 def test_same_timing(time1, time2, expected):
     assert same_timing(time1, time2) == expected
+
+
+@pytest.mark.parametrize('present_files, checksums_artifacts, expected_exception', (
+    (
+     ("abc/foo.sha512", "def/foo.sha512"),
+     [
+        {"taskId": "abc", "path": "foo.sha512"},
+        {"taskId": "def", "path": "foo.sha512"},
+     ],
+     None,
+    ),
+    (
+     ("abc/foo.sha512", "def/foo.sha512"),
+     [
+        {"taskId": "abc", "path": "foo.sha512"},
+        {"taskId": "def", "path": "foo.sha512"},
+        {"taskId": "ghi", "path": "foo.sha512"},
+     ],
+     TaskVerificationError,
+    ),
+))
+def test_build_mar_filelist(tmpdir, present_files, checksums_artifacts, expected_exception):
+    workdir = tmpdir
+    for a in present_files:
+        abs_path = os.path.join(workdir, 'cot', a)
+        os.makedirs(os.path.dirname(abs_path))
+        with open(abs_path, 'w') as f:
+            # Make file exist
+            print('something', file=f)
+    try:
+        file_list = build_mar_filelist(workdir, checksums_artifacts)
+        expected_mars = []
+        for a in checksums_artifacts:
+            expected_mars.append((a['path'], os.path.join(workdir, 'cot', a['taskId'], a['path'])))
+        assert set(file_list) == set(expected_mars)
+        return
+    except BaseException as e:
+        if isinstance(e, expected_exception):
+            # The correct exception was raised!
+            return
+        # We expected an exception and got the one we expected - nothing to do!
+        assert False, "expected exception ({}) not raised".format(expected_exception)
+        return
+    if expected_exception:
+        assert False, "expected exception ({}) not raised".format(expected_exception)

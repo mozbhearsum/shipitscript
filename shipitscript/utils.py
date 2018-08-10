@@ -1,7 +1,10 @@
 import arrow
+import os
+import os.path
 import logging
 
-from scriptworker.exceptions import ScriptWorkerTaskException
+from scriptworker.exceptions import ScriptWorkerTaskException, \
+    TaskVerificationError
 
 
 log = logging.getLogger(__name__)
@@ -42,3 +45,32 @@ def same_timing(time1, time2):
     """Function to decompress time from strings into datetime objects and
     compare them"""
     return arrow.get(time1) == arrow.get(time2)
+
+
+def build_mar_filelist(workdir, checksums_artifacts):
+    # Scriptworker should've already downloaded these as part of CoT verification
+    # If it didn't, that's a problem! We don't want to download anything on our own,
+    # because that would bypass CoT verification.
+    filelist = []
+    messages = []
+
+    for checksums_artifact in checksums_artifacts:
+        taskId = checksums_artifact['taskId']
+        path = checksums_artifact['path']
+        full_path = os.path.join(workdir, 'cot', taskId, path)
+        if not os.path.exists(full_path):
+            messages.append("{} doesn't exist!".format(full_path))
+        filelist.append((path, full_path))
+
+    if messages:
+        raise TaskVerificationError(messages)
+    return filelist
+
+
+def collect_mar_checksums(filelist):
+    mar_checksums = {}
+    for name, path in filelist:
+        with open(path) as f:
+            mar_checksums[name] = f.read()
+
+    return mar_checksums
