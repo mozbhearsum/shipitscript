@@ -3,7 +3,8 @@ from unittest.mock import MagicMock
 
 from freezegun import freeze_time
 import shipitapi
-from shipitscript.ship_actions import mark_as_shipped, mark_as_started
+import shipitscript.ship_actions
+from shipitscript.ship_actions import mark_as_shipped, mark_as_started, submit_mar_manifest
 
 
 @freeze_time('2018-01-19 12:59:59')
@@ -107,3 +108,25 @@ def test_mark_as_started(monkeypatch, timeout, expected_timeout):
         csrf_token_prefix='firefox-'
     )
     new_release_instance_mock.submit.assert_called_with(**data)
+
+
+def test_submit_mar_manifest(monkeypatch):
+    build_mar_filelist_mock = MagicMock()
+    collect_mar_checksums_mock = MagicMock()
+    generate_mar_manifest_mock = MagicMock()
+    # These methods actually live in shipitscript.utils, but because
+    # ship_actions imports them, they need to be patched there.
+    monkeypatch.setattr(shipitscript.ship_actions, 'build_mar_filelist', build_mar_filelist_mock)
+    monkeypatch.setattr(shipitscript.ship_actions, 'collect_mar_checksums', collect_mar_checksums_mock)
+    monkeypatch.setattr(shipitscript.ship_actions, 'generate_mar_manifest', generate_mar_manifest_mock)
+
+    ship_it_instance_config = {}
+    release_name = "Firefox-63.0-build1"
+    checksum_artifacts = [
+        {"taskId": "abc", "path": "foo.sha512"},
+        {"taskId": "def", "path": "foo.sha512"},
+    ]
+
+    submit_mar_manifest('fake', ship_it_instance_config, release_name, checksum_artifacts)
+
+    build_mar_filelist_mock.assert_called_with('fake', checksum_artifacts)

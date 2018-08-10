@@ -8,7 +8,7 @@ from scriptworker.exceptions import ScriptWorkerTaskException, \
     TaskVerificationError
 from shipitscript.utils import (
     get_auth_primitives, check_release_has_values, same_timing,
-    build_mar_filelist, collect_mar_checksums
+    build_mar_filelist, collect_mar_checksums, generate_mar_manifest
 )
 
 
@@ -321,3 +321,13 @@ def test_collect_mar_checksums(tmpdir, present_files):
         expected_checksums[pf] = "something{}".format(i)
 
     assert collect_mar_checksums(filelist) == expected_checksums
+
+
+@pytest.mark.parametrize('mar_checksums', (
+    {
+        "abc/foo.sha512": "abcdef123",
+        "def/foo.sha512": "ghijkl456",
+    }
+))
+def test_generate_mar_manifest(mar_checksums):
+    assert generate_mar_manifest(mar_checksums) == {"mars": mar_checksums}
