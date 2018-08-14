@@ -1,5 +1,5 @@
 {
-    "title": "Taskcluster ShipIt mark-as-started task minimal schema",
+    "title": "Taskcluster ShipIt submit-mar-manifest task minimal schema",
     "type": "object",
     "properties": {
         "dependencies": {
