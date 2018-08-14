@@ -117,6 +117,31 @@ def test_fail_get_ship_it_instance_config_from_scope(context, scope):
             'project:releng:ship-it:action:mark-as-started',
         ],
     }, True),
+    ({
+        'dependencies': ['someTaskId'],
+        'payload': {
+            'release_name': 'Firefox-59.0b3-build1',
+            'checksum_artifacts': [
+                {
+                    "taskId": "someTaskid",
+                    "path": "public/build/foo.mar.sha512",
+                },
+            ],
+        },
+        'scopes': [
+            'project:releng:ship-it:server:dev',
+            'project:releng:ship-it:action:submit-mar-manifest',
+        ],
+    }, False),
+    ({
+        'payload': {
+            'release_name': 'Firefox-59.0b3-build1',
+        },
+        'scopes': [
+            'project:releng:ship-it:server:dev',
+            'project:releng:ship-it:action:submit-mar-manifest',
+        ],
+    }, True),
 ))
 def test_validate_task(context, task, raises):
     context.task = task

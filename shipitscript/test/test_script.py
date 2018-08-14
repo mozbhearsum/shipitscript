@@ -91,7 +91,7 @@ async def test_mark_as_started(context, monkeypatch, scopes, payload, raises):
             'project:releng:ship-it:server:dev'
         ],
         'Firefox-61.0b9-build1',
-        {"taskId": "abcdef"},
+        [{"taskId": "abcdef"}],
         True,
     ),
     (
@@ -100,7 +100,7 @@ async def test_mark_as_started(context, monkeypatch, scopes, payload, raises):
             'project:releng:ship-it:server:dev'
         ],
         'Firefox-61.0b9-build1',
-        {"taskId": "abcdef", "path": "foo.sha512"},
+        [{"taskId": "abcdef", "path": "foo.sha512"}],
         False,
     ),
 ))
