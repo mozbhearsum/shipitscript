@@ -84,14 +84,14 @@ async def test_mark_as_started(context, monkeypatch, scopes, payload, raises):
         })
 
 
-@pytest.mark.parametrize('scopes,release_name,checksum_artifacts,raises', (
+@pytest.mark.parametrize('scopes,release_name,upstreamArtifacts,raises', (
     (
         [
             'project:releng:ship-it:action:submit-mar-manifest',
             'project:releng:ship-it:server:dev'
         ],
         'Firefox-61.0b9-build1',
-        [{"taskId": "abcdef"}],
+        [{"taskId": "abcdef", "taskType": "partial"}],
         True,
     ),
     (
@@ -100,16 +100,16 @@ async def test_mark_as_started(context, monkeypatch, scopes, payload, raises):
             'project:releng:ship-it:server:dev'
         ],
         'Firefox-61.0b9-build1',
-        [{"taskId": "abcdef", "path": "foo.sha512"}],
+        [{"taskId": "abcdef", "taskType": "partial", "paths": ["foo.sha512"]}],
         False,
     ),
 ))
 @pytest.mark.asyncio
-async def test_submit_mar_manifest(context, monkeypatch, scopes, release_name, checksum_artifacts, raises):
+async def test_submit_mar_manifest(context, monkeypatch, scopes, release_name, upstreamArtifacts, raises):
     context.task['scopes'] = scopes
     context.task['payload'] = {
         "release_name": release_name,
-        "checksum_artifacts": checksum_artifacts,
+        "upstreamArtifacts": upstreamArtifacts,
     }
 
     submit_mar_manifest_mock = MagicMock()
@@ -129,7 +129,7 @@ async def test_submit_mar_manifest(context, monkeypatch, scopes, release_name, c
                 'password': 'some-password'
             },
             release_name,
-            checksum_artifacts,
+            upstreamArtifacts,
         )
 
 

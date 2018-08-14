@@ -65,7 +65,7 @@ def submit_mar_manifest_action(context):
     ship_actions.submit_mar_manifest(
         context.config['work_dir'], context.ship_it_instance_config,
         context.task['payload']['release_name'],
-        context.task['payload']['checksum_artifacts'],
+        context.task['payload']['upstreamArtifacts'],
     )
 
 

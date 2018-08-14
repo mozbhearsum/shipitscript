@@ -54,14 +54,14 @@ def build_mar_filelist(workdir, checksums_artifacts):
 
     for checksums_artifact in checksums_artifacts:
         taskId = checksums_artifact['taskId']
-        path = checksums_artifact['path']
-        full_path = os.path.join(workdir, 'cot', taskId, path)
-        # Scriptworker should've already downloaded these as part of CoT verification
-        # If it didn't, that's a problem! We don't want to download anything on our own,
-        # because that would bypass CoT verification.
-        if not os.path.exists(full_path):
-            messages.append("{} doesn't exist!".format(full_path))
-        filelist.append((path, full_path))
+        for path in checksums_artifact['paths']:
+            full_path = os.path.join(workdir, 'cot', taskId, path)
+            # Scriptworker should've already downloaded these as part of CoT verification
+            # If it didn't, that's a problem! We don't want to download anything on our own,
+            # because that would bypass CoT verification.
+            if not os.path.exists(full_path):
+                messages.append("{} doesn't exist!".format(full_path))
+            filelist.append((path, full_path))
 
     if messages:
         raise TaskVerificationError(messages)

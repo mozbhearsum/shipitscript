@@ -122,11 +122,11 @@ def test_submit_mar_manifest(monkeypatch):
 
     ship_it_instance_config = {}
     release_name = "Firefox-63.0-build1"
-    checksum_artifacts = [
-        {"taskId": "abc", "path": "foo.sha512"},
-        {"taskId": "def", "path": "foo.sha512"},
+    upstreamArtifacts = [
+        {"taskId": "abc", "taskType": "partial", "paths": ["foo.sha512"]},
+        {"taskId": "def", "taskType": "partial", "paths": ["foo.sha512"]},
     ]
 
-    submit_mar_manifest('fake', ship_it_instance_config, release_name, checksum_artifacts)
+    submit_mar_manifest('fake', ship_it_instance_config, release_name, upstreamArtifacts)
 
-    build_mar_filelist_mock.assert_called_with('fake', checksum_artifacts)
+    build_mar_filelist_mock.assert_called_with('fake', upstreamArtifacts)

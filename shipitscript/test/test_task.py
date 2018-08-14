@@ -121,10 +121,13 @@ def test_fail_get_ship_it_instance_config_from_scope(context, scope):
         'dependencies': ['someTaskId'],
         'payload': {
             'release_name': 'Firefox-59.0b3-build1',
-            'checksum_artifacts': [
+            'upstreamArtifacts': [
                 {
                     "taskId": "someTaskid",
-                    "path": "public/build/foo.mar.sha512",
+                    "taskType": "partial",
+                    "paths": [
+                        "public/build/foo.mar.sha512",
+                    ]
                 },
             ],
         },

@@ -24,28 +24,34 @@
                 "release_name": {
                     "type": "string"
                 },
-                "checksum_artifacts": {
+                "upstreamArtifacts": {
                     "type": "array",
-                    "minItems": 1,
                     "items": {
                         "type": "object",
                         "properties": {
+                            "taskType": {
+                                "type": "string"
+                            },
                             "taskId": {
                                 "type": "string"
                             },
-                            "path": {
-                                "type": "string"
+                            "paths": {
+                              "type": "array",
+                              "minItems": 1,
+                              "uniqueItems": true,
+                              "items": {
+                                  "type": "string"
+                              }
                             }
                         },
-                        "required": [
-                            "taskId", "path"
-                        ]
+                        "required": ["taskId", "taskType", "paths"]
                     },
-                    "additionalProperties": false
+                    "minItems": 1,
+                    "uniqueItems": true
                 }
             },
             "required": [
-                "release_name", "checksum_artifacts"
+                "release_name", "upstreamArtifacts"
             ],
             "additionalProperties": true
         }

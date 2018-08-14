@@ -262,17 +262,17 @@ def test_same_timing(time1, time2, expected):
     (
      ("abc/foo.sha512", "def/foo.sha512"),
      [
-        {"taskId": "abc", "path": "foo.sha512"},
-        {"taskId": "def", "path": "foo.sha512"},
+        {"taskId": "abc", "taskType": "partial", "paths": ["foo.sha512"]},
+        {"taskId": "def", "taskType": "partial", "paths": ["foo.sha512"]},
      ],
      None,
     ),
     (
      ("abc/foo.sha512", "def/foo.sha512"),
      [
-        {"taskId": "abc", "path": "foo.sha512"},
-        {"taskId": "def", "path": "foo.sha512"},
-        {"taskId": "ghi", "path": "foo.sha512"},
+        {"taskId": "abc", "taskType": "partial", "paths": ["foo.sha512"]},
+        {"taskId": "def", "taskType": "partial", "paths": ["foo.sha512"]},
+        {"taskId": "ghi", "taskType": "partial", "paths": ["foo.sha512"]},
      ],
      TaskVerificationError,
     ),
@@ -290,7 +290,8 @@ def test_build_mar_filelist(tmpdir, present_files, checksums_artifacts, expected
         file_list = build_mar_filelist(workdir, checksums_artifacts)
         expected_mars = []
         for a in checksums_artifacts:
-            expected_mars.append((a['path'], os.path.join(workdir, 'cot', a['taskId'], a['path'])))
+            for p in a['paths']:
+                expected_mars.append((p, os.path.join(workdir, 'cot', a['taskId'], p)))
         assert set(file_list) == set(expected_mars)
         return
     except BaseException as e:
