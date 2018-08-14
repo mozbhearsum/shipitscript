@@ -25,20 +25,25 @@
                   "type": "string"
                 },
                 "checksum_artifacts": {
-                  "type": "object",
-                  "properties": {
-                    "taskId": {
-                      "type": "string"
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "taskId": {
+                        "type": "string"
+                      },
+                      "path": {
+                        "type": "string"
+                      }
                     },
-                    "path": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "taskId", "path"
-                  ],
-                  "additionalProperties": false
+                    "required": [
+                      "taskId", "path"
+                    ],
+                    "additionalProperties": false
+                  }
                 }
+              }
             },
             "required": [
                 "release_name", "checksum_artifacts"
