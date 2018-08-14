@@ -1,5 +1,6 @@
-import logging
 from datetime import datetime
+import logging
+import pprint
 
 import shipitapi
 
@@ -53,6 +54,8 @@ def submit_mar_manifest(workdir, ship_it_instance_config, release_name, checksum
     filelist = build_mar_filelist(workdir, checksum_artifacts)
     mar_checksums = collect_mar_checksums(filelist)
     mar_manifest = generate_mar_manifest(mar_checksums)
+    log.info("Generated unsigned mar manifest:")
+    log.info(pprint.pformat(mar_manifest))
     assert mar_manifest
     # set up ship it v2 auth
     # collect data from upstream task artifacts
@@ -63,3 +66,4 @@ def submit_mar_manifest(workdir, ship_it_instance_config, release_name, checksum
     #    or maybe there's intermediary "dummy" tasks that download checksums from their upstreams, and make larger checksums
     #    out of those. then we could depend on those, and pull all of those checksums.
     #    would that still be useful if those "dummy" tasks run on docker worker, though?
+    # publish manifest as artifact
