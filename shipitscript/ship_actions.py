@@ -58,12 +58,7 @@ def submit_mar_manifest(workdir, ship_it_instance_config, release_name, checksum
     log.info(pprint.pformat(mar_manifest))
     assert mar_manifest
     # set up ship it v2 auth
-    # collect data from upstream task artifacts
-    #  - we probably can't depend directly on all of the upstream tasks, because there will be too many...
-    #  - it looks like release-generate-checksums has mozharness pulling stuff from s3.
-    #     we should avoid this if we can, because it bypasses CoT. ideally we find some way to depend on
-    #     everything directly here....
-    #    or maybe there's intermediary "dummy" tasks that download checksums from their upstreams, and make larger checksums
-    #    out of those. then we could depend on those, and pull all of those checksums.
-    #    would that still be useful if those "dummy" tasks run on docker worker, though?
-    # publish manifest as artifact
+    # TODO:
+    #  * publish manifest as artifact
+    #  * ensure all files have unique name in manifest (otherwise things get overwritten)
+    #  * throw error if they are duplicate filenames - see about checking this during graph generation, too
