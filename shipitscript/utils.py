@@ -61,7 +61,7 @@ def build_mar_filelist(workdir, checksums_artifacts):
             # because that would bypass CoT verification.
             if not os.path.exists(full_path):
                 messages.append("{} doesn't exist!".format(full_path))
-            filelist.append((path, full_path))
+            filelist.append(("{}/{}".format(taskId, path), full_path))
 
     if messages:
         raise TaskVerificationError(messages)
